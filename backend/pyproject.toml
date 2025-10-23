@@ -1,0 +1,8 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Backend for m-dashboard"
+dependencies = [
+    "fastapi[standard]",
+    "uvicorn[standard]",
+]
