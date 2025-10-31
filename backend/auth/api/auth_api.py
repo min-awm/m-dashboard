@@ -26,3 +26,10 @@ async def login(
 ):
     """Login for user"""
     return await service.login(data)
+
+@router.get("/me")
+async def get_me(
+    service: Annotated[AuthService, Depends(get_auth_service)],
+):
+    """Get user info"""
+    return await service.get_me()

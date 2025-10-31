@@ -1,4 +1,5 @@
 from typing import Type
+from uuid import UUID
 
 from beanie import Document
 
@@ -16,4 +17,7 @@ class UserRepository:
     
     async def get_user_by_username(self, username: str) -> User:
         return await self.model.find_one(User.username == username)
+  
+    async def get_user_by_uuid(self, uuid: UUID) -> User:
+        return await self.model.find_one(User.uuid == uuid)
 

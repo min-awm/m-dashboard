@@ -1,4 +1,7 @@
+from uuid import UUID
+
 from core.service import BaseService
+from fastapi import Request
 from pwdlib import PasswordHash
 
 from auth.api.schemas import LoginSchema, RegisterSchema
@@ -10,7 +13,8 @@ password_hash = PasswordHash.recommended()
 
 
 class AuthService(BaseService):
-    def __init__(self, user_repo: UserRepository):
+    def __init__(self, request: Request, user_repo: UserRepository):
+        self.request = request
         self.user_repo = user_repo
 
     async def register(self, data: RegisterSchema):
@@ -56,5 +60,20 @@ class AuthService(BaseService):
                     "refresh_token": refresh_token,
                 },
                 "msg": "Login successfully",
+            },
+        )
+
+    async def get_me(self):
+        """Login for user and return user info, access token"""
+        user_uuid = self.request.state.user_uuid
+        user = await self.user_repo.get_user_by_uuid(UUID(user_uuid))
+
+        return self.response_success(
+            {
+                "user": {
+                    "name": user.name,
+                    "username": user.username,
+                    "status": user.status,
+                },
             },
         )
