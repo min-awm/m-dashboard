@@ -4,8 +4,9 @@ from core.service import BaseService
 from fastapi import Request
 from pwdlib import PasswordHash
 
-from auth.api.schemas import LoginSchema, RegisterSchema
-from auth.helper.token import create_access_token, create_refresh_token
+from auth.api.schemas import LoginSchema, RegisterSchema, TokenSchema
+from auth.enum.token_type import TokenType
+from auth.helper.token import create_access_token, create_refresh_token, decode_token
 from auth.model.user import STATUS
 from auth.repository.user_repository import UserRepository
 
@@ -48,7 +49,7 @@ class AuthService(BaseService):
             return self.exception("Invalid username or password")
 
         if user.status == STATUS.inactive:
-            return self.exception("User is inactive")
+            return self.response_success_failed("User is inactive")
 
         access_token = create_access_token(user.uuid)
         refresh_token = create_refresh_token(user.uuid)
@@ -68,6 +69,9 @@ class AuthService(BaseService):
         user_uuid = self.request.state.user_uuid
         user = await self.user_repo.get_user_by_uuid(UUID(user_uuid))
 
+        if not user:
+            return self.response_success_failed("User not found")
+
         return self.response_success(
             {
                 "user": {
@@ -75,5 +79,34 @@ class AuthService(BaseService):
                     "username": user.username,
                     "status": user.status,
                 },
+            },
+        )
+
+    async def get_access_token(self, data: TokenSchema):
+        """Request a new access token using the refresh token"""
+        payload = decode_token(data.refresh_token)
+
+        if payload is None:
+            return self.not_permission("Invalid token")
+
+        if payload["type"] != TokenType.refresh:
+            return self.not_permission("Invalid token")
+
+        user_uuid = payload["sub"]
+        user = await self.user_repo.get_user_by_uuid(UUID(user_uuid))
+
+        if not user:
+            return self.response_success_failed("User not found")
+
+        if user.status == STATUS.inactive:
+            return self.exception("User is inactive")
+
+        access_token = create_access_token(user.uuid)
+
+        return self.response_success(
+            {
+                "token": {
+                    "access_token": access_token,
+                }
             },
         )

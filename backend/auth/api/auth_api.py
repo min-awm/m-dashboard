@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from pwdlib import PasswordHash
 
-from auth.api.schemas import LoginSchema, RegisterSchema
+from auth.api.schemas import LoginSchema, RegisterSchema, TokenSchema
 from auth.dependencies import get_auth_service
 from auth.service.auth_service import AuthService
 
@@ -27,9 +27,19 @@ async def login(
     """Login for user"""
     return await service.login(data)
 
+
 @router.get("/me")
 async def get_me(
     service: Annotated[AuthService, Depends(get_auth_service)],
 ):
     """Get user info"""
     return await service.get_me()
+
+
+@router.post("/access-token")
+async def get_access_token(
+    data: TokenSchema,
+    service: Annotated[AuthService, Depends(get_auth_service)],
+):
+    """Get user info"""
+    return await service.get_access_token(data)

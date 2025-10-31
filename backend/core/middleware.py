@@ -23,6 +23,7 @@ class Middleware(BaseHTTPMiddleware):
             "/openapi.json",
             "/api/auth/register",
             "/api/auth/login",
+            "/api/auth/access-token",
         ]:
             return await call_next(request)
 
@@ -30,17 +31,17 @@ class Middleware(BaseHTTPMiddleware):
         if auth_header is None or not auth_header.startswith("Bearer "):
             return JSONResponse(
                 status_code=401,
-                content={"detail": "Invalid token"},
+                content={"detail": {"msg": "Invalid token"}},
             )
 
         token = auth_header.split(" ")[1]
         payload = decode_token(token)
-        
+        \
         if payload is None:
-            return JSONResponse(status_code=401, content={"detail": "Invalid token"})
+            return JSONResponse(status_code=401, content={"detail": {"msg": "Invalid token"}})
 
         if payload["type"] != TokenType.access:
-            return JSONResponse(status_code=401, content={"detail": "Invalid token"})
+            return JSONResponse(status_code=401, content={"detail": {"msg": "Invalid token"}})
         
         request.state.user_uuid = payload["sub"]
         response = await call_next(request)
