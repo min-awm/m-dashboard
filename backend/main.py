@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from auth.api import router as auth_router
+from chat.api import router as chat_router
 from core.middleware import Middleware
 from core.mongodb import init_db
 from fastapi import FastAPI
@@ -20,3 +21,4 @@ app = FastAPI(
 
 app.add_middleware(Middleware)
 app.include_router(auth_router)
+app.include_router(chat_router)

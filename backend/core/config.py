@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     REDIS_PASSWORD: str = Field(env="REDIS_PASSWORD")
     REDIS_PORT: int = Field(env="REDIS_PORT")
 
+    # ====== OPEN AI ======
+    OPENAI_API_KEY: str = Field(env="OPENAI_API_KEY")
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

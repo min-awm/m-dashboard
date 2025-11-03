@@ -6,6 +6,7 @@ description = "Backend for m-dashboard"
 dependencies = [
     "beanie>=2.0.0",
     "fastapi[standard]",
+    "openai>=2.6.1",
     "pwdlib[argon2]>=0.3.0",
     "pydantic-settings>=2.11.0",
     "pyjwt>=2.10.1",

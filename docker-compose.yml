@@ -20,6 +20,7 @@ services:
       REDIS_PASSWORD: 123456
       REDIS_PORT: 6379
 
+      OPENAI_API_KEY: openaikey
   
   mongo:
     image: mongo:latest

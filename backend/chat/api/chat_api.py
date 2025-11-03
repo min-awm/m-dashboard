@@ -5,7 +5,7 @@ from auth.api.schemas import LoginSchema, RegisterSchema, TokenSchema
 from auth.dependencies import get_auth_service
 from auth.service.auth_service import AuthService
 
-router = APIRouter(tags=["auth"])
+router = APIRouter(tags=["chat"])
 
 
 @router.post("/register")
